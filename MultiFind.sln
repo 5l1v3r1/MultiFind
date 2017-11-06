@@ -5,10 +5,9 @@ VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiFind", "MultiFind\MultiFind.csproj", "{5D71AEED-E0CE-4CE4-92F4-274D0526EB12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiFindWindowsForms", "MultiFindWindowsForms\MultiFindWindowsForms.csproj", "{3263059A-8E9E-42E0-AE6B-92B3839308BE}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -18,11 +17,18 @@ Global
 		{5D71AEED-E0CE-4CE4-92F4-274D0526EB12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D71AEED-E0CE-4CE4-92F4-274D0526EB12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D71AEED-E0CE-4CE4-92F4-274D0526EB12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3263059A-8E9E-42E0-AE6B-92B3839308BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3263059A-8E9E-42E0-AE6B-92B3839308BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3263059A-8E9E-42E0-AE6B-92B3839308BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3263059A-8E9E-42E0-AE6B-92B3839308BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2DC61D35-BBCF-4456-A2B5-C9EDBA2DA3FE}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
