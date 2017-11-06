@@ -27,6 +27,8 @@ namespace MultiFind {
     private int competionPortThreadsMax;
     private int workerThreadsAvailable;
     private int completionThreadsAvailable;
+    static long fileCount;
+    static long dirCount;
 
     public MainWindow() {
       InitializeComponent();
@@ -76,12 +78,15 @@ namespace MultiFind {
         foreach (var file in files)
           Dispatcher.Invoke(() => {
             hits.Add(new Hits(startPath, file));
+            fileCount++;
           });
 
       if (directories != null)
         foreach (var dir in directories)
-          ThreadPool.QueueUserWorkItem(o =>
-            RecursiveFind(dir, keyword, driveIndex));
+          ThreadPool.QueueUserWorkItem(o => {
+            RecursiveFind(dir, keyword, driveIndex);
+            dirCount++;
+          });
 
       if (directories==null || directories.Length==0)
       Dispatcher.Invoke(() => {
@@ -113,6 +118,7 @@ namespace MultiFind {
       foreach (var drive in searchPaths)
         ThreadPool.QueueUserWorkItem(o => RecursiveFind(drive, filter, i++));
 
+      fileCount = dirCount = 0;
       timer = new Timer(timerCallback, null, 1000, 1000);
       stopwatch = new Stopwatch();
       stopwatch.Start();
@@ -123,7 +129,10 @@ namespace MultiFind {
       ThreadPool.GetAvailableThreads(out workerThreadsAvailable, out completionThreadsAvailable);
       Dispatcher.Invoke(() => {
         Title = stopwatch.Elapsed.ToString(@"hh\:mm\:ss")
-        + " Threads: " + (workerThreadsMax - workerThreadsAvailable);
+        + " Threads: " + (workerThreadsMax - workerThreadsAvailable)
+        + " Hits: " + fileCount
+        + " Dirs: " + dirCount
+        + " DPS: " + (int) (dirCount / stopwatch.Elapsed.TotalSeconds);
       });
       if (workerThreadsMax - workerThreadsAvailable == 1) {
         timer.Dispose();
