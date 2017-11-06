@@ -16,7 +16,10 @@
         <DataGrid x:Name="HitsDataGrid" Margin="10,38,10,10" Grid.Column="1" IsReadOnly="True" MouseDoubleClick="HitsDataGrid_MouseDoubleClick" SelectionMode="Single"/>
         <Button Content="Stop" Grid.Column="1" HorizontalAlignment="Left" Margin="108,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
         <Label x:Name="StatusLabel" Grid.Column="1" Margin="188,10,10,0" VerticalAlignment="Top" Height="23"/>
-        <DataGrid x:Name="PathList" Margin="10,38,10,10" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <DataGrid x:Name="PathList" Margin="10,38,10,10" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding}" ClipboardContentBinding="{x:Null}"/>
+            </DataGrid.Columns>
         </DataGrid>
 
     </Grid>

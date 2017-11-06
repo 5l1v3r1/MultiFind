@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
@@ -12,12 +15,12 @@ namespace MultiFind {
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
-  public partial class MainWindow : Window {
+  public partial class MainWindow : Window , INotifyPropertyChanged {
 
     //ConcurrentQueue<Hits> hits = new ConcurrentQueue<Hits>();
     ObservableCollection<Hits> hits = new ObservableCollection<Hits>();
     bool run = false;
-    SortedList<int,StringWithNotify> runningTasks = new SortedList<int,StringWithNotify>();
+    ConcurrentDictionary<int,string> runningTasks = new ConcurrentDictionary<int,string>();
     List<string> searchPaths=new List<string> ();
     private Timer timer;
     private Stopwatch stopwatch;
@@ -40,6 +43,14 @@ namespace MultiFind {
 
     }
 
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private void NotifyPropertyChanged(String propertyName = "") {
+      if (PropertyChanged != null) {
+        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+      }
+    }
+
     string[] GetLogicalDrives() {
       string[] drives = System.IO.Directory.GetLogicalDrives();
       return drives;
@@ -56,14 +67,14 @@ namespace MultiFind {
 
       var thread = Thread.CurrentThread.ManagedThreadId;
 
-      Dispatcher.Invoke(() => {
+      //Dispatcher.Invoke(() => {
         //StatusLabel.Content = startPath;
         //runningTasks[driveIndex] = startPath;
-        if (!runningTasks.ContainsKey(thread))
-          runningTasks.Add(thread, new StringWithNotify());
-        runningTasks[thread].str = startPath ;
+        //if (!runningTasks.ContainsKey(thread))
+          //runningTasks.Add(thread, new StringWithNotify());
+        runningTasks[thread] = new string(startPath.Take(70).ToArray()) ;
         //CollectionViewSource.GetDefaultView(PathList)?.Refresh();        
-      });
+      //});
 
       try {
         files = Directory.GetFileSystemEntries(startPath, keyword);
@@ -89,10 +100,12 @@ namespace MultiFind {
           });
 
       if (directories==null || directories.Length==0)
-      Dispatcher.Invoke(() => {
+      //Dispatcher.Invoke(() => {
         //runningTasks[driveIndex] = searchPaths[driveIndex] + " done";
-        runningTasks[thread].str="";       
-      });
+        runningTasks[thread]="";
+        //if (runningTasks.ContainsKey(thread))
+          //runningTasks.Remove(thread);
+      //});
 
     }
 
@@ -105,7 +118,7 @@ namespace MultiFind {
       runningTasks.Clear();
       /*foreach (var s in searchPaths)
         runningTasks.Add(s);*/
-      PathList.ItemsSource = null;
+      //PathList.ItemsSource = null;
       PathList.ItemsSource = runningTasks.Values;
 
       string filter;
@@ -119,7 +132,7 @@ namespace MultiFind {
         ThreadPool.QueueUserWorkItem(o => RecursiveFind(drive, filter, i++));
 
       fileCount = dirCount = 0;
-      timer = new Timer(timerCallback, null, 1000, 1000);
+      timer = new Timer(timerCallback, null, 100, 100);
       stopwatch = new Stopwatch();
       stopwatch.Start();
     }
@@ -133,6 +146,10 @@ namespace MultiFind {
         + " Hits: " + fileCount
         + " Dirs: " + dirCount
         + " DPS: " + (int) (dirCount / stopwatch.Elapsed.TotalSeconds);
+        //NotifyCollectionChanged()
+        PathList.ItemsSource = runningTasks.Values;
+        NotifyPropertyChanged("runningTasks");
+        //PathList.Items.Refresh();
       });
       if (workerThreadsMax - workerThreadsAvailable == 1) {
         timer.Dispose();
