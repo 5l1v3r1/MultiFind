@@ -151,11 +151,13 @@ namespace MultiFindWindowsForms {
         + " DPS: " + (int)(dirCount / stopwatch.Elapsed.TotalSeconds);
 
         //PathList.Clear();
+        PathList.BeginUpdate();
         for(int i=0; i < runningTasks.Count; i++)
           if (PathList.Items.Count <= i)
             PathList.Items.Add(runningTasks.ElementAt(i).Value);
           else
             PathList.Items[i].Text= runningTasks.ElementAt(i).Value;
+        PathList.EndUpdate();
       });
 
       if (workerThreadsMax - workerThreadsAvailable == 1) {
