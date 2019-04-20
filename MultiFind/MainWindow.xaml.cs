@@ -20,6 +20,7 @@ namespace MultiFind {
     //ConcurrentQueue<Hits> hits = new ConcurrentQueue<Hits>();
     ObservableCollection<Hits> hits = new ObservableCollection<Hits>();
     bool run = false;
+    private bool eachDirNewThread;
     ConcurrentDictionary<int,string> runningTasks = new ConcurrentDictionary<int,string>();
     List<string> searchPaths=new List<string> ();
     private Timer timer;
@@ -85,6 +86,8 @@ namespace MultiFind {
         //files[0] = e.Message;
       }
 
+      NotifyPropertyChanged("Values");
+
       if (files != null)
         foreach (var file in files)
           Dispatcher.Invoke(() => {
@@ -94,10 +97,15 @@ namespace MultiFind {
 
       if (directories != null)
         foreach (var dir in directories)
-          ThreadPool.QueueUserWorkItem(o => {
+          if (eachDirNewThread)
+            ThreadPool.QueueUserWorkItem(o => {
+              RecursiveFind(dir, keyword, driveIndex);
+              dirCount++;
+            });
+          else {
             RecursiveFind(dir, keyword, driveIndex);
             dirCount++;
-          });
+          }
 
       if (directories==null || directories.Length==0)
       //Dispatcher.Invoke(() => {
@@ -114,6 +122,8 @@ namespace MultiFind {
         return;
       hits.Clear();
       run = true;
+
+      eachDirNewThread = NewThreadCheckBox.IsChecked == true;
 
       runningTasks.Clear();
       /*foreach (var s in searchPaths)
@@ -132,7 +142,7 @@ namespace MultiFind {
         ThreadPool.QueueUserWorkItem(o => RecursiveFind(drive, filter, i++));
 
       fileCount = dirCount = 0;
-      timer = new Timer(timerCallback, null, 100, 100);
+      timer = new Timer(timerCallback, null, 20, 20);
       stopwatch = new Stopwatch();
       stopwatch.Start();
     }
