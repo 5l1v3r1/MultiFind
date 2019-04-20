@@ -185,5 +185,10 @@ namespace MultiFind {
       }
       catch (Exception ex) { MessageBox.Show(ex.Message); }
     }
+
+    private void KeywordTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
+      if (e.Key == System.Windows.Input.Key.Enter)
+        Button_Click(null, null);
+    }
   }
 }
